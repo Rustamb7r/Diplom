@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Diplom</string>
+    <string name="ox">OX</string>
+    <string name="oy">OY</string>
+    <string name="showOne">Show one</string>
+    <string name="showTwo">Show two</string>
+    <string name="firstGraph">Первый график</string>
+    <string name="btnListOne">Получить списки</string>
+    <string name="btnListTwo">Получить апроксимацию</string>
+    <string name="Graphs">Графики</string>
+</resources>
