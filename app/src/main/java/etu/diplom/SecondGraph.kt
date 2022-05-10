@@ -28,6 +28,7 @@ class SecondGraph : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySecondGraphBinding.inflate(layoutInflater)
+
         setContentView(binding?.root)
 
         val point = 50
