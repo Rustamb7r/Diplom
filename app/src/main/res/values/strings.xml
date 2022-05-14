@@ -8,4 +8,6 @@
     <string name="btnListOne">Получить списки</string>
     <string name="btnListTwo">Получить апроксимацию</string>
     <string name="Graphs">Графики</string>
+    <string name="btnList1">Список 1</string>
+    <string name="btnList2">Список 2</string>
 </resources>
