@@ -59,6 +59,7 @@
                     android:id="@+id/layoutGraphOne"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
+                    android:layout_marginEnd="10dp"
                     android:orientation="vertical"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/layoutMain"
@@ -120,6 +121,7 @@
                         android:id="@+id/layoutGraphFour"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
+                        android:layout_marginEnd="10dp"
                         android:layout_weight="1"
                         android:orientation="vertical"
                         tools:context=".MainActivity" />
@@ -128,6 +130,7 @@
                         android:id="@+id/layoutGraphFive"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
+                        android:layout_marginEnd="10dp"
                         android:layout_weight="1"
                         android:orientation="vertical"
                         tools:context=".MainActivity" />

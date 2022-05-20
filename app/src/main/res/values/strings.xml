@@ -5,8 +5,8 @@
     <string name="showOne">Show one</string>
     <string name="showTwo">Show two</string>
     <string name="firstGraph">Первый график</string>
-    <string name="btnListOne">Получить списки</string>
-    <string name="btnListTwo">Получить апроксимацию</string>
+    <string name="btnListOne">Два списка</string>
+    <string name="btnListTwo">Исходные графики</string>
     <string name="Graphs">Графики</string>
     <string name="btnList1">Список 1</string>
     <string name="btnList2">Список 2</string>

@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import etu.diplom.databinding.ActivitySecondGraphBinding
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class SecondGraph : AppCompatActivity() {
@@ -31,27 +33,28 @@ class SecondGraph : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySecondGraphBinding.inflate(layoutInflater)
-
         setContentView(binding?.root)
 
         val point = 1
-        val n = 5
+        val n = 40
 
-        val listOX = converter(intent.getStringArrayListExtra("LIST_X_SECOND")!!)
-        val listOY = converter(intent.getStringArrayListExtra("LIST_Y_SECOND")!!)
-        Log.d("MySmartLog", "listOX: $listOX")
-        Log.d("MySmartLog", "listOY: $listOY")
+//        TODO Получение координат от Хасбика
+        val baseListOX = converter(intent.getStringArrayListExtra("LIST_X_SECOND")!!)
+        val baseListOY = converter(intent.getStringArrayListExtra("LIST_Y_SECOND")!!)
+//        Log.d("MySmartLog", "listOX: $listOX")
+//        Log.d("MySmartLog", "listOY: $listOY")
 
+//        TODO Заполнение пробелов в списках координат
         var k = 0
-        while (k < listOX.size - 1) {
-            if (listOX[k + 1] - listOX[k] == 1.0) {
-                listX.add(listOX[k])
-                listY.add(listOY[k])
-            } else if (listOX[k + 1] - listOX[k] != 1.0) {
-                listX.add(listOX[k])
-                listY.add(listOY[k])
-                listX.add((listOX[k + 1] + listOX[k]) / 2)
-                listY.add((listOY[k + 1] + listOY[k]) / 2)
+        while (k < baseListOX.size - 1) {
+            if (baseListOX[k + 1] - baseListOX[k] == 1.0) {
+                listX.add(baseListOX[k])
+                listY.add(baseListOY[k])
+            } else if (baseListOX[k + 1] - baseListOX[k] != 1.0) {
+                listX.add(baseListOX[k])
+                listY.add(baseListOY[k])
+                listX.add((baseListOX[k + 1] + baseListOX[k]) / 2)
+                listY.add((baseListOY[k + 1] + baseListOY[k]) / 2)
 
 //      TODO Неудачный вариант
 //                listX.add(listOX[k])
@@ -65,7 +68,10 @@ class SecondGraph : AppCompatActivity() {
             }
             k++
         }
+//        Log.d("MySmartLog", "listX: $listX")
+//        Log.d("MySmartLog", "listY: $listY")
 
+//        TODO Первый способ апроксимации
         binding?.btnList1?.setOnClickListener {
             var i = point
             listApproxX.clear()
@@ -73,13 +79,28 @@ class SecondGraph : AppCompatActivity() {
                 listApproxX.add(listX[i])
                 i++
             }
+            val startOne = System.currentTimeMillis()
             listApprox = getFirstApprox(listX, listY, n, point)
+            val timeOne = System.currentTimeMillis() - startOne
+            Log.d("MySmartLog", "timeOne: $timeOne")
+
             binding?.layoutGraphOne?.removeAllSeries()
+            binding?.layoutGraphOne?.gridLabelRenderer?.horizontalAxisTitle = "x"
+            binding?.layoutGraphOne?.gridLabelRenderer?.verticalAxisTitle = "a"
+
+            binding?.layoutGraphOne?.viewport?.setMinX(0.0)
+            binding?.layoutGraphOne?.viewport?.setMaxX(Collections.max(listApproxX))
+            binding?.layoutGraphOne?.viewport?.setMinY(Collections.min(listApprox))
+            binding?.layoutGraphOne?.viewport?.setMaxY(Collections.max(listApprox))
+            binding?.layoutGraphOne?.viewport?.isXAxisBoundsManual = true
+            binding?.layoutGraphOne?.viewport?.isYAxisBoundsManual = true
+
             binding?.layoutGraphOne?.addSeries(LineGraphSeries(showGraph(listApproxX, listApprox)))
-            Log.d("MySmartLog", "listApproxX size: ${listApproxX.size}")
-            Log.d("MySmartLog", "listApprox size: ${listApprox.size}")
+//            Log.d("MySmartLog", "listApproxX size: ${listApproxX.size}")
+//            Log.d("MySmartLog", "listApprox size: ${listApprox.size}")
         }
 
+//        TODO Тупорылый способ апроксимации Федорова
         binding?.btnList2?.setOnClickListener {
             var i = 0
             listApproxX.clear()
@@ -87,22 +108,34 @@ class SecondGraph : AppCompatActivity() {
                 listApproxX.add(listX[i])
                 i++
             }
-            listApprox = getSecondApprox(listX, listY)
+
+            val startTwo = System.currentTimeMillis()
+            listApprox = getSecondApprox(listX, listY, n)
+            val timeTwo = System.currentTimeMillis() - startTwo
+            Log.d("MySmartLog", "timeTwo: $timeTwo")
+
             binding?.layoutGraphOne?.removeAllSeries()
+            binding?.layoutGraphOne?.gridLabelRenderer?.horizontalAxisTitle = "x"
+            binding?.layoutGraphOne?.gridLabelRenderer?.verticalAxisTitle = "a"
+
+            binding?.layoutGraphOne?.viewport?.setMinX(0.0)
+            binding?.layoutGraphOne?.viewport?.setMaxX(Collections.max(listApproxX))
+            binding?.layoutGraphOne?.viewport?.setMinY(Collections.min(listApprox))
+            binding?.layoutGraphOne?.viewport?.setMaxY(Collections.max(listApprox))
+            binding?.layoutGraphOne?.viewport?.isXAxisBoundsManual = true
+            binding?.layoutGraphOne?.viewport?.isYAxisBoundsManual = true
+
             binding?.layoutGraphOne?.addSeries(LineGraphSeries(showGraph(listApproxX, listApprox)))
-            Log.d("MySmartLog", "listApproxX size: ${listApproxX.size}")
-            Log.d("MySmartLog", "listApprox size: ${listApprox.size}")
+//            Log.d("MySmartLog", "listApproxX size: ${listApproxX.size}")
+//            Log.d("MySmartLog", "listApprox size: ${listApprox.size}")
         }
 
-        Log.d("MySmartLog", "listX: $listX")
-        Log.d("MySmartLog", "listY: $listY")
-
-//        Разделение по нулю
+//        TODO Получение апроксимированного графика
         binding?.btnListOne?.setOnClickListener {
             clickOne()
         }
 
-//        Разделение траектории на две прямые
+//        TODO Получение двух апроксимированных графиков по нулю
         binding?.btnListTwo?.setOnClickListener {
             clickTwo(point, listX, listY)
         }
@@ -114,6 +147,8 @@ class SecondGraph : AppCompatActivity() {
         listPositiveY.clear()
         listPositiveX.clear()
         var i = 0
+
+//        TODO Разделение по нулю
         while (i < listApprox.size) {
             if (listApprox[i] < 0) {
                 listNegativeY.add(listApprox[i])
@@ -125,36 +160,38 @@ class SecondGraph : AppCompatActivity() {
             }
             i++
         }
-//            Log.d("MySmartLog", "listNegativeY: $listNegativeY")
-//            Log.d("MySmartLog", "listNegativeX: $listNegativeX")
-//            Log.d("MySmartLog", "listPositiveY: $listPositiveY")
-//            Log.d("MySmartLog", "listPositiveX: $listPositiveX")
+//        Log.d("MySmartLog", "listNegativeY: $listNegativeY")
+//        Log.d("MySmartLog", "listNegativeX: $listNegativeX")
+//        Log.d("MySmartLog", "listPositiveY: $listPositiveY")
+//        Log.d("MySmartLog", "listPositiveX: $listPositiveX")
 //        Log.d("MySmartLog", "listNegativeX size: ${listNegativeX.size}")
 //        Log.d("MySmartLog", "listNegativeY size: ${listNegativeY.size}")
 //        Log.d("MySmartLog", "listPositiveX size: ${listPositiveX.size}")
 //        Log.d("MySmartLog", "listPositiveY size: ${listPositiveY.size}")
 
         binding?.layoutGraphTwo?.removeAllSeries()
-        binding?.layoutGraphTwo?.addSeries(
-            LineGraphSeries(
-                showGraph(
-                    listNegativeX,
-                    listNegativeY
-                )
-            )
-        )
+
+//        TODO Раскоментить если будут нормальные координаты
+//        binding?.layoutGraphTwo?.viewport?.setMinX(0.0)
+//        binding?.layoutGraphTwo?.viewport?.setMaxX(Collections.max(listNegativeX))
+//        binding?.layoutGraphTwo?.viewport?.setMinY(Collections.min(listNegativeY))
+//        binding?.layoutGraphTwo?.viewport?.setMaxY(Collections.max(listNegativeY))
+//        binding?.layoutGraphTwo?.viewport?.isXAxisBoundsManual = true
+//        binding?.layoutGraphTwo?.viewport?.isYAxisBoundsManual = true
+        binding?.layoutGraphTwo?.addSeries(LineGraphSeries(showGraph(listNegativeX, listNegativeY)))
+
+//        TODO Раскоментить если будут нормальные координаты
         binding?.layoutGraphThree?.removeAllSeries()
-        binding?.layoutGraphThree?.addSeries(
-            LineGraphSeries(
-                showGraph(
-                    listPositiveX,
-                    listPositiveY
-                )
-            )
-        )
+//        binding?.layoutGraphThree?.viewport?.setMinX(0.0)
+//        binding?.layoutGraphThree?.viewport?.setMaxX(Collections.max(listPositiveX))
+//        binding?.layoutGraphThree?.viewport?.setMinY(Collections.min(listPositiveY))
+//        binding?.layoutGraphThree?.viewport?.setMaxY(Collections.max(listPositiveY))
+//        binding?.layoutGraphThree?.viewport?.isXAxisBoundsManual = true
+//        binding?.layoutGraphThree?.viewport?.isYAxisBoundsManual = true
+        binding?.layoutGraphThree?.addSeries(LineGraphSeries(showGraph(listPositiveX, listPositiveY)))
     }
 
-    private fun clickTwo(point: Int, listX: ArrayList<Double>, listY: ArrayList<Double>) {
+    private fun clickTwo(pointNew: Int, listX: ArrayList<Double>, listY: ArrayList<Double>) {
         listNegativeXApprox.clear()
         listNegativeYApprox.clear()
         listPositiveXApprox.clear()
@@ -166,7 +203,7 @@ class SecondGraph : AppCompatActivity() {
             var i = 0
             while (i < listNegativeX.size - splitLeft) {
                 listNegativeXApprox.add(listNegativeX[i])
-                listNegativeYApprox.add(listY[i + point])
+                listNegativeYApprox.add(listY[i + pointNew])
 //                    listNegativeYApprox.add(listNegativeY[i])
                 i++
             }
@@ -178,7 +215,7 @@ class SecondGraph : AppCompatActivity() {
             var i = splitRight
             while (i < listPositiveX.size) {
                 listPositiveXApprox.add(listPositiveX[i])
-                listPositiveYApprox.add(listY[i + point + splitLeft + listNegativeYApprox.size])
+                listPositiveYApprox.add(listY[i + pointNew + splitLeft + listNegativeYApprox.size])
 //                    listPositiveYApprox.add(listPositiveY[i])
                 i++
             }
@@ -186,25 +223,16 @@ class SecondGraph : AppCompatActivity() {
 //                Log.d("MySmartLog", "listPositiveYApprox size: ${listPositiveYApprox.size}")
         } else Toast.makeText(this, "Списки пустые", Toast.LENGTH_SHORT).show()
 
-        binding?.layoutGraphFive?.removeAllSeries()
-        binding?.layoutGraphFive?.addSeries(
-            LineGraphSeries(
-                showGraph(
-                    listNegativeXApprox,
-                    listNegativeYApprox
-                )
-            )
-        )
-        binding?.layoutGraphFive?.addSeries(
-            LineGraphSeries(
-                showGraph(
-                    listPositiveXApprox,
-                    listPositiveYApprox
-                )
-            )
-        )
         binding?.layoutGraphFour?.removeAllSeries()
+        binding?.layoutGraphFour?.gridLabelRenderer?.horizontalAxisTitle = "x"
+        binding?.layoutGraphFour?.gridLabelRenderer?.verticalAxisTitle = "a"
         binding?.layoutGraphFour?.addSeries(LineGraphSeries(showGraph(listX, listY)))
+
+        binding?.layoutGraphFive?.removeAllSeries()
+        binding?.layoutGraphFive?.gridLabelRenderer?.horizontalAxisTitle = "x"
+        binding?.layoutGraphFive?.gridLabelRenderer?.verticalAxisTitle = "y"
+        binding?.layoutGraphFive?.addSeries(LineGraphSeries(showGraph(listNegativeXApprox, listNegativeYApprox)))
+        binding?.layoutGraphFive?.addSeries(LineGraphSeries(showGraph(listPositiveXApprox, listPositiveYApprox)))
     }
 
     private fun converter(
@@ -269,16 +297,17 @@ class SecondGraph : AppCompatActivity() {
 
     private fun getSecondApprox(
         listX: ArrayList<Double>,
-        listY: ArrayList<Double>
+        listY: ArrayList<Double>,
+        n: Int
     ): ArrayList<Double> {
         val newApproxList: ArrayList<Double> = ArrayList()
 
-        var i = 0
+        var i = n / 2 + 1
         var dy: Double
         var dx: Double
-        while (i < listX.size - 1) {
-            dy = listY[i] - listY[i + 1]
-            dx = listX[i] - listX[i + 1]
+        while (i < listX.size - n / 2 - 1) {
+            dy = listY[i - n / 2] - listY[i + n / 2]
+            dx = listX[i - n / 2] - listX[i + n / 2]
             val a = abs(dy / dx)
             newApproxList.add(a)
             i++
